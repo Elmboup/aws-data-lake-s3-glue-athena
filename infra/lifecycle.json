@@ -1,0 +1,27 @@
+{
+  "Rules": [
+    {
+      "ID": "lab-noncurrent-expiration",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "lab/"
+      },
+      "NoncurrentVersionExpiration": {
+        "NoncurrentDays": 30
+      }
+    },
+    {
+      "ID": "lab-transition-standard-ia",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "lab/archive/"
+      },
+      "Transitions": [
+        {
+          "Days": 30,
+          "StorageClass": "STANDARD_IA"
+        }
+      ]
+    }
+  ]
+}
