@@ -1,0 +1,39 @@
+name: Validate project
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate Python syntax
+        run: python -m py_compile src/glue/raw_to_silver.py
+
+      - name: Validate shell scripts
+        run: |
+          bash -n scripts/bootstrap_s3.sh
+          bash -n scripts/deploy_glue.sh
+          bash -n scripts/run_pipeline.sh
+
+      - name: Validate JSON
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          for p in [
+              Path("infra/iam/glue-trust-policy.json"),
+              Path("infra/lifecycle.json"),
+          ]:
+              json.loads(p.read_text())
+              print(f"OK: {p}")
+          PY
